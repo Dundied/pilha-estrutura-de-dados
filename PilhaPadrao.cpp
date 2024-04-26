@@ -1,12 +1,11 @@
 #include <iostream>
-#include <stack> //biblioteca de Pilha
 #include <string>
 #include "Pilha.h"
 
 using namespace std;
 
 // Função para verificar se é um operador
-bool éoperador(char c) {
+bool e_operador(char c) {
     return (c == '+' or c == '-' or c == '*' or c == '/');
 }
 
@@ -22,37 +21,35 @@ int significado(char op) {
 // Função para converter expressão para NPR
 string conversao_NPR(string exp) {
     string postfix = "";
-    stack<char> s;
-    for (char& c : exp) { //ponteiro para a variável da função "éoperador"
+    Pilha* s = criarPilha(); // Pilha usando a lógica definida em Pilha.h
+    for (char& c : exp) {
         if (c == ' ')
             continue;
-        else if (isdigit(c)) {// verifica se é valor numério
+        else if (isdigit(c)) { // verifica se é valor numérico
             postfix += c;
             postfix += ' '; 
         } else if (c == '(') {
-            s.push(c);
+            push(s, c);
         } else if (c == ')') {
-            while (!s.empty() && s.top() != '(') {
-                postfix += s.top();
+            while (!estaVazia(s) && verTopo(s) != '(') {
+                postfix += pop(s);
                 postfix += ' '; 
-                s.pop();
             }
-            if (!s.empty() && s.top() == '(')
-                s.pop();
+            if (!estaVazia(s) && verTopo(s) == '(')
+                pop(s);
         } else {
-            while (!s.empty() && significado(s.top()) >= significado(c)) {
-                postfix += s.top();
+            while (!estaVazia(s) && significado(verTopo(s)) >= significado(c)) {
+                postfix += pop(s);
                 postfix += ' '; 
-                s.pop();
             }
-            s.push(c);
+            push(s, c);
         }
     }
-    while (!s.empty()) {
-        postfix += s.top();
+    while (!estaVazia(s)) {
+        postfix += pop(s);
         postfix += ' '; 
-        s.pop();
     }
+    liberarPilha(s); // Liberar a pilha alocada
     return postfix;
 }
 
@@ -62,9 +59,9 @@ float calculo_NPR(string exp) {
     for (char& c : exp) {
         if (c == ' ')
             continue;
-        else if (isdigit(c)) { // verifica se é valor numério
+        else if (isdigit(c)) { // verifica se é valor numérico
             push(p, c - '0'); // adiciona o valor na pilha
-        } else if (éoperador(c)) { // verifica se a pilha é válida
+        } else if (e_operador(c)) { // verifica se é operador
             if (p->n < 2) {
                 cout << "Expressao estava errada" << endl;
                 liberarPilha(p);
@@ -105,7 +102,7 @@ int main() {
     getline(cin, exp);
 
     string postfixExp = conversao_NPR(exp);
-    cout << "NPR: " << postfixExp << endl;
+    cout << "expressao em NPR: " << postfixExp << endl;
 
     float result = calculo_NPR(postfixExp);
     if (result != 0)

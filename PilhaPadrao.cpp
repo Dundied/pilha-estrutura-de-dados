@@ -54,9 +54,9 @@ string conversao_NPR(string exp) {
 }
 
 // Função que calcula a expressão
-float calculo_NPR(string exp) {
+float calculo_NPR(string NPR) {
     Pilha* p = criarPilha(); // cria a pilha
-    for (char& c : exp) {
+    for (char& c : NPR) {
         if (c == ' ')
             continue;
         else if (isdigit(c)) { // verifica se é valor numérico
@@ -101,12 +101,12 @@ int main() {
     cout << "Digite a expressao matematica: ";
     getline(cin, exp);
 
-    string postfixExp = conversao_NPR(exp);
-    cout << "expressao em NPR: " << postfixExp << endl;
+    string NPR = conversao_NPR(exp);
+    cout << "expressao em NPR: " << NPR << endl;
 
-    float result = calculo_NPR(postfixExp);
+    float result = calculo_NPR(NPR);
     if (result != 0)
-        cout << "Resultado: " << result << endl;
+        cout << "Resultado (estado da pilha): " << result << endl;
 
     return 0;
 }
